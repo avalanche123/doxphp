@@ -6,7 +6,10 @@ Version 1.0.1m - Sat 21 Jun 2008
 by Michel Fortin
 <http://www.michelf.com/>
 
-based on work by John Gruber  
+Additional features and fixes by Henrik Paul
+<http://github.com/wolfie/php-markdown/tree/extra>
+
+based on Markdown by John Gruber  
 <http://daringfireball.net/>
 
 
