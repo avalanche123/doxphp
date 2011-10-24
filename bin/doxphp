@@ -1,0 +1,239 @@
+#!/usr/bin/env php
+
+<?php
+class Parser implements Iterator
+{
+    private $tokens;
+    private $count;
+    private $index;
+
+    public function __construct($string)
+    {
+        $this->tokens = token_get_all($string);
+        $this->count  = count($this->tokens);
+        $this->index  = 0;
+    }
+
+    public function rewind()
+    {
+        $this->index = 0;
+    }
+
+    public function key()
+    {
+        return $this->index;
+    }
+
+    public function current()
+    {
+        if (!$this->valid()) {
+            return;
+        }
+        return $this->getToken($this->tokens[$this->index]);
+    }
+
+    public function valid()
+    {
+        return $this->index >= 0 && $this->index < $this->count;
+    }
+
+    public function next()
+    {
+        $this->index++;
+        return $this->current();
+    }
+
+    public function prev()
+    {
+        $this->index--;
+        return $this->current();
+    }
+
+    private function getToken($token)
+    {
+        if (is_array($token)) {
+            $tok = array(
+                "name"  => token_name($token[0]),
+                "value" => $token[1]
+            );
+        } else {
+            $tok = array(
+                "name"  => null,
+                "value" => $token
+            );
+        }
+
+        return (object) $tok;
+    }
+}
+
+$parser     = new Parser(file_get_contents('php://stdin'));
+$blocks     = array();
+$token      = $parser->current();
+$curlysOpen = 0;
+
+while ($parser->valid()) {
+    $description = '';
+    $tags        = array();
+    $code        = '';
+    $type        = '';
+    $name        = '';
+    $isPrivate   = false;
+    $isProtected = false;
+    $isPublic    = false;
+    $isAbstract  = false;
+    $isFinal     = false;
+    $isStatic    = false;
+
+    while ($token !== null && !in_array($token->name, array("T_DOC_COMMENT", "T_ABSTRACT", "T_FINAL", "T_PRIVATE", "T_PROTECTED", "T_PUBLIC", "T_STATIC", "T_NAMESPACE", "T_CLASS", "T_INTERFACE", "T_FUNCTION"))) {
+        $token = $parser->next();
+
+        if (null === $token) {
+            break;
+        } elseif ("{" === $token->value) {
+            $curlysOpen++;
+        } elseif("}" === $token->value) {
+            $curlysOpen--;
+        }
+    }
+
+    if (null === $token) {
+        break;
+    }
+
+    // phpdoc comment
+    if ("T_DOC_COMMENT" === $token->name) {
+        $lines = array_map(function($line) {
+            return substr(trim($line), 2);
+        }, array_slice(explode(PHP_EOL, $token->value), 1, -1));
+
+        $tagLines = array_filter($lines, function($line) {
+            return strpos($line, "@") === 0;
+        });
+
+        $tags = array_map(function($line) {
+            $line  = substr($line, 1);
+            $words = explode(" ", str_replace("  ", " ", $line), 4);
+            $count = count($words);
+
+            $tag = array('type'  => $words[0]);
+
+            if ($count > 1) {
+                $tag['types'] = explode(",", $words[1]);
+            } elseif ($count > 2) {
+                $tag['types'] = explode(",", $words[1]);
+                $tag['name']  = substr(1, $words[2]);
+            } elseif ($count > 3) {
+                $tag['types']       = explode(",", $words[1]);
+                $tag['name']        = substr(1, $words[2]);
+                $tag['description'] = trim($words[3]);
+            }
+
+            return $tag;
+        }, $tagLines);
+
+        $description = trim(str_replace("\n\n\n", "\n\n", implode(PHP_EOL, array_diff($lines, $tagLines))), "\n");
+
+        do {
+            $token = $parser->next();
+            if ("{" === $token->value) {
+                $curlysOpen++;
+            } elseif("}" === $token->value) {
+                $curlysOpen--;
+            }
+        } while ($token !== null && !in_array($token->name, array("T_DOC_COMMENT", "T_ABSTRACT", "T_FINAL", "T_PRIVATE", "T_PROTECTED", "T_PUBLIC", "T_STATIC", "T_NAMESPACE", "T_CLASS", "T_INTERFACE", "T_FUNCTION")));
+
+        // got into another comment, generate another block
+        if ("T_DOC_COMMENT" === $token->name) {
+            continue;
+        }
+    }
+
+    if (in_array($token->name, array("T_ABSTRACT", "T_FINAL", "T_PRIVATE", "T_PROTECTED", "T_PUBLIC", "T_STATIC", "T_NAMESPACE", "T_CLASS", "T_INTERFACE", "T_FUNCTION"))) {
+        while (true) {
+            $code .= $token->value;
+
+            if ("T_ABSTRACT" === $token->name) {
+                $isAbstract = true;
+            } elseif ("T_FINAL" === $token->name) {
+                $isFinal = true;
+            }
+
+            if ("T_PRIVATE" === $token->name) {
+                $isPrivate = true;
+            } elseif ("T_PROTECTED" === $token->name) {
+                $isProtected = true;
+            }
+
+            if ("T_STATIC" === $token->name) {
+                $block['isStatic'] = true;
+            }
+
+            // implicit public
+            $isPublic = !($isPrivate || $isProtected);
+
+            if (in_array($token->name, array('T_NAMESPACE', 'T_CLASS', 'T_INTERFACE', 'T_FUNCTION'))) {
+                $type    = strtolower(substr($token->name, 2));
+
+                if ("function" === $type && 1 === $curlysOpen) {
+                    $type = "method";
+                }
+
+                $gotName = false;
+                $gotCode = false;
+
+                while (true) {
+                    $token = $parser->next();
+
+                    if (in_array($token->value, array("(", "{", ";"))) {
+                        $gotName = true;
+                        if ("(" !== $token->value) {
+                            $gotCode = true;
+                        }
+                    }
+                    if ("{" === $token->value) {
+                        $curlysOpen++;
+                    }
+                    if (!$gotCode) {
+                        $code .= $token->value;
+                    }
+                    if (")" === $token->value) {
+                        $gotCode = true;
+                    }
+                    if (!$gotName) {
+                        $name .= $token->value;
+                    }
+                    if ($gotCode && $gotName) {
+                        break;
+                    }
+                };
+
+                $name = trim($name);
+                $code = trim($code);
+
+                // method, class or interface definition gathered, exit the code loop
+                break;
+            }
+
+            $token = $parser->next();
+        }
+    }
+
+    $blocks[] = array(
+        "tags"        => array_values($tags),
+        "description" => $description,
+        "isPrivate"   => $isPrivate,
+        "isProtected" => $isProtected,
+        "isPublic"    => $isPublic,
+        "isAbstract"  => $isAbstract,
+        "isFinal"     => $isFinal,
+        "isStatic"    => $isStatic,
+        "code"        => $code,
+        "type"        => $type,
+        "name"        => $name,
+    );
+
+    $token = $parser->next();
+};
+
+echo json_encode($blocks);

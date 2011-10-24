@@ -1,0 +1,2 @@
+
+[{"tags":[{"type":"param","types":["string"]},{"type":"return","types":["void"]}],"description":"Greets the world","isPrivate":false,"isProtected":false,"isPublic":true,"isAbstract":false,"isFinal":false,"isStatic":false,"code":"function hello($world)","type":"function","name":"hello"}]
