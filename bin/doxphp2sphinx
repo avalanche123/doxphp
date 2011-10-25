@@ -1,0 +1,62 @@
+#!/usr/bin/env php
+<?php
+
+$blocks = json_decode(file_get_contents('php://stdin'));
+$out    = '';
+$indent = '   ';
+$level  = 0;
+
+foreach ($blocks as $block) {
+    if (in_array($block->type, array('class', 'interface'))) {
+        $level = 1;
+    } elseif (in_array($block->type, array('function', 'namespace'))) {
+        $level = 0;
+    }
+
+    $prefix = str_repeat($indent, $level);
+
+    if ("method" === $block->type) {
+        $out .= $prefix;
+    }
+
+    $out .= ".. php:".$block->type.":: ".$block->name."\n\n";
+
+    // no description for namespace
+    if ("namespace" === $block->type) {
+        continue;
+    }
+
+    if (!empty($block->description)) {
+        $out .= $prefix.$indent.$block->description."\n\n";
+    }
+
+    foreach ($block->tags as $tag) {
+        if ("param" !== $tag->type) {
+            $out .= "\n";
+        }
+
+        $string = $tag->type;
+
+        if ("return" === $string) {
+            $string .= "s";
+        }
+
+        if (isset($tag->types)) {
+            $string .= " ".implode("|", $tag->types);
+        }
+        if (isset($tag->name)) {
+            $string .= " $".$tag->name;
+        }
+
+        $out .= $prefix.$indent.":".$string.":";
+
+        if (isset($tag->description)) {
+            $out .= " ".$tag->description;
+        }
+
+        $out .= "\n";
+    }
+    $out .= "\n";
+}
+
+echo trim($out);
