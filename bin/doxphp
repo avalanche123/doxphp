@@ -117,15 +117,15 @@ while ($parser->valid()) {
 
             $tag = array('type'  => $words[0]);
 
-            if ($count > 1) {
-                $tag['types'] = explode(",", $words[1]);
-            } elseif ($count > 2) {
-                $tag['types'] = explode(",", $words[1]);
-                $tag['name']  = substr(1, $words[2]);
-            } elseif ($count > 3) {
-                $tag['types']       = explode(",", $words[1]);
-                $tag['name']        = substr(1, $words[2]);
+            if ($count > 3) {
+                $tag['types']       = explode("|", $words[1]);
+                $tag['name']        = substr($words[2], 1);
                 $tag['description'] = trim($words[3]);
+            } elseif ($count > 2) {
+                $tag['types'] = explode("|", $words[1]);
+                $tag['name']  = substr(1, $words[2]);
+            } elseif ($count > 1) {
+                $tag['types'] = explode("|", $words[1]);
             }
 
             return $tag;
