@@ -44,23 +44,31 @@ foreach ($blocks as $block) {
             $out .= "\n";
         }
 
-        $string = $tag->type;
+        $out .= $prefix.$indent.":".$tag->type;
 
-        if ("return" === $string) {
-            $string .= "s";
+        if ("return" === $tag->type) {
+            $out .= "s";
+        }
+
+        if ("param" !== $tag->type) {
+            $out .= ":";
         }
 
         if (isset($tag->types)) {
-            $string .= " ".implode("|", $tag->types);
-        }
-        if (isset($tag->name)) {
-            $string .= " $".$tag->name;
+            $out .= " ".implode("|", $tag->types);
         }
 
-        $out .= $prefix.$indent.":".$string.":";
+        if (isset($tag->name)) {
+            $out .= " $".$tag->name;
+        }
+
+        if ("param" === $tag->type) {
+            $out .= ":";
+        }
 
         if (isset($tag->description)) {
-            $out .= " ".$tag->description;
+            $lines = array_filter(explode("\n", $tag->description));
+            $out .= " ".$lines[0];
         }
 
         $out .= "\n";
