@@ -11,15 +11,15 @@ if (null === $blocks) {
 }
 
 foreach ($blocks as $block) {
-    if (in_array($block->type, array('class', 'interface'))) {
-        $level = 1;
-    } elseif (in_array($block->type, array('function', 'namespace'))) {
+    if (in_array($block->type, array('function', 'namespace'))) {
         $level = 0;
+    } else {
+        $level = 1;
     }
 
     $prefix = str_repeat($indent, $level);
 
-    if ("method" === $block->type) {
+    if (!in_array($block->type, array('function', 'namespace', 'class', 'interface'))) {
         $out .= $prefix;
     }
 
