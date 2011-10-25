@@ -176,6 +176,8 @@ while ($parser->valid()) {
 
                 if ("function" === $type && 1 === $curlysOpen) {
                     $type = "method";
+                } elseif ("const" === $type) {
+                    $type = "constant";
                 }
 
                 $gotName = false;

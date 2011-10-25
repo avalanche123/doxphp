@@ -28,7 +28,13 @@ foreach ($blocks as $block) {
         $out .= $prefix;
     }
 
-    $out .= ".. php:".$block->type.":: ".$block->name."\n\n";
+    if ("variable" === $block->type) {
+        $out .= ".. php:attr:: ".$block->name."\n\n";
+    } elseif ("constant" === $block->type) {
+        $out .= ".. php:const:: ".$block->name."\n\n";
+    } else {
+        $out .= ".. php:".$block->type.":: ".$block->name."\n\n";
+    }
 
     // no description for namespace
     if ("namespace" === $block->type) {
