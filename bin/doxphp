@@ -112,7 +112,7 @@ while ($parser->valid()) {
 
         $tags = array_map(function($line) {
             $line  = substr($line, 1);
-            $words = explode(" ", str_replace("  ", " ", $line), 4);
+            $words = explode(" ", preg_replace('!\s+!', ' ', $line), 4);
             $count = count($words);
 
             $tag = array('type'  => $words[0]);
@@ -122,10 +122,10 @@ while ($parser->valid()) {
                 $tag['name']        = substr($words[2], 1);
                 $tag['description'] = trim($words[3]);
             } elseif ($count > 2) {
-                $tag['types'] = explode("|", $words[1]);
-                $tag['name']  = substr(1, $words[2]);
+                $tag['types']       = explode("|", $words[1]);
+                $tag['name']        = substr($words[2], 1);
             } elseif ($count > 1) {
-                $tag['types'] = explode("|", $words[1]);
+                $tag['types']       = explode("|", $words[1]);
             }
 
             return $tag;
