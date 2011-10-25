@@ -84,7 +84,7 @@ while ($parser->valid()) {
     $isFinal     = false;
     $isStatic    = false;
 
-    while ($token !== null && !in_array($token->name, array("T_DOC_COMMENT", "T_ABSTRACT", "T_FINAL", "T_PRIVATE", "T_PROTECTED", "T_PUBLIC", "T_STATIC", "T_NAMESPACE", "T_CLASS", "T_INTERFACE", "T_FUNCTION"))) {
+    while ($token !== null && !in_array($token->name, array("T_DOC_COMMENT", "T_ABSTRACT", "T_FINAL", "T_PRIVATE", "T_PROTECTED", "T_PUBLIC", "T_STATIC", 'T_CONST', 'T_VARIABLE', "T_NAMESPACE", "T_CLASS", "T_INTERFACE", "T_FUNCTION"))) {
         $token = $parser->next();
 
         if (null === $token) {
@@ -140,7 +140,7 @@ while ($parser->valid()) {
             } elseif("}" === $token->value) {
                 $curlysOpen--;
             }
-        } while ($token !== null && !in_array($token->name, array("T_DOC_COMMENT", "T_ABSTRACT", "T_FINAL", "T_PRIVATE", "T_PROTECTED", "T_PUBLIC", "T_STATIC", "T_NAMESPACE", "T_CLASS", "T_INTERFACE", "T_FUNCTION")));
+        } while ($token !== null && !in_array($token->name, array("T_DOC_COMMENT", "T_ABSTRACT", "T_FINAL", "T_PRIVATE", "T_PROTECTED", "T_PUBLIC", "T_STATIC", 'T_CONST', 'T_VARIABLE', "T_NAMESPACE", "T_CLASS", "T_INTERFACE", "T_FUNCTION")));
 
         // got into another comment, generate another block
         if ("T_DOC_COMMENT" === $token->name) {
@@ -148,7 +148,7 @@ while ($parser->valid()) {
         }
     }
 
-    if (in_array($token->name, array("T_ABSTRACT", "T_FINAL", "T_PRIVATE", "T_PROTECTED", "T_PUBLIC", "T_STATIC", "T_NAMESPACE", "T_CLASS", "T_INTERFACE", "T_FUNCTION"))) {
+    if (in_array($token->name, array("T_ABSTRACT", "T_FINAL", "T_PRIVATE", "T_PROTECTED", "T_PUBLIC", "T_STATIC", 'T_CONST', 'T_VARIABLE', "T_NAMESPACE", "T_CLASS", "T_INTERFACE", "T_FUNCTION"))) {
         while (true) {
             $code .= $token->value;
 
@@ -171,8 +171,8 @@ while ($parser->valid()) {
             // implicit public
             $isPublic = !($isPrivate || $isProtected);
 
-            if (in_array($token->name, array('T_NAMESPACE', 'T_CLASS', 'T_INTERFACE', 'T_FUNCTION'))) {
-                $type    = strtolower(substr($token->name, 2));
+            if (in_array($token->name, array('T_CONST', 'T_VARIABLE', 'T_NAMESPACE', 'T_CLASS', 'T_INTERFACE', 'T_FUNCTION'))) {
+                $type = strtolower(substr($token->name, 2));
 
                 if ("function" === $type && 1 === $curlysOpen) {
                     $type = "method";
@@ -182,6 +182,11 @@ while ($parser->valid()) {
                 $gotCode = false;
 
                 while (true) {
+                    if (!$gotName && "T_VARIABLE" === $token->name) {
+                        $name    = substr($token->value, 1);
+                        $gotName = true;
+                    }
+
                     $token = $parser->next();
 
                     if (in_array($token->value, array("(", "{", ";"))) {
