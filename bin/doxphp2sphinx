@@ -6,6 +6,10 @@ $out    = '';
 $indent = '   ';
 $level  = 0;
 
+if (null === $blocks) {
+    exit(1);
+}
+
 foreach ($blocks as $block) {
     if (in_array($block->type, array('class', 'interface'))) {
         $level = 1;
