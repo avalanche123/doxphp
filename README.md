@@ -39,24 +39,26 @@ output
   {
       "tags": [
           {
-              "type":"param"
-            , "types":["string"]
+              "type"        : "param"
+            , "types"       : ["string"]
+            , "name"        : "world"
+            , "description" : "- the world to greet"
           }
         , {
-              "type":"return"
-            , "types":["void"]
+              "type"  : "return"
+            , "types" : ["void"]
           }
       ]
-    , "description": "Greets the world"
-    , "isPrivate":   false
-    , "isProtected": false
-    , "isPublic":    true
-    , "isAbstract":  false
-    , "isFinal":     false
-    , "isStatic":    false
-    , "code":        "function hello($world)"
-    , "type":        "function"
-    , "name":        "hello"
+    , "description" : "Greets the world"
+    , "isPrivate"   : false
+    , "isProtected" : false
+    , "isPublic"    : true
+    , "isAbstract"  : false
+    , "isFinal"     : false
+    , "isStatic"    : false
+    , "code"        : "function hello($world)"
+    , "type"        : "function"
+    , "name"        : "hello"
   }
 ]
 ```
