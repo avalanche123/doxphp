@@ -62,3 +62,27 @@ output
   }
 ]
 ```
+
+# Renderers
+
+* doxphp2sphinx
+
+```bash
+$ doxphp < test.php | doxphp2sphinx  > test.rst
+```
+
+test.rst:
+
+```rst
+.. php:function:: hello
+
+   Greets the world
+
+   :param string $world: - the world to greet
+
+   :returns void:
+```
+
+# TODO
+
+implement more renderers
