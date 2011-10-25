@@ -11,6 +11,11 @@ if (null === $blocks) {
 }
 
 foreach ($blocks as $block) {
+
+    if ($block->isPrivate) {
+        continue;
+    }
+
     if (in_array($block->type, array('function', 'namespace'))) {
         $level = 0;
     } else {
