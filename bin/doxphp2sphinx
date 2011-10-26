@@ -42,7 +42,12 @@ foreach ($blocks as $block) {
     }
 
     if (!empty($block->description)) {
-        $out .= str_replace("\\", "\\\\", $prefix.$indent.$block->description)."\n\n";
+        // escape slashes
+        $description = str_replace("\\", "\\\\", $prefix.$indent.$block->description);
+        // indent new lines
+        $description = preg_replace('/([\\n\\r]+)/', '$1'.$prefix.$indent, $description);
+
+        $out .= $description."\n\n";
     }
 
     foreach ($block->tags as $tag) {
