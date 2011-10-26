@@ -42,7 +42,7 @@ foreach ($blocks as $block) {
     }
 
     if (!empty($block->description)) {
-        $out .= $prefix.$indent.$block->description."\n\n";
+        $out .= str_replace("\\", "\\\\", $prefix.$indent.$block->description)."\n\n";
     }
 
     foreach ($block->tags as $tag) {
@@ -61,7 +61,7 @@ foreach ($blocks as $block) {
         }
 
         if (isset($tag->types)) {
-            $out .= " ".implode("|", $tag->types);
+            $out .= " ".str_replace("\\", "\\\\", implode("|", $tag->types));
         }
 
         if (isset($tag->name)) {
@@ -73,7 +73,7 @@ foreach ($blocks as $block) {
         }
 
         if (isset($tag->description)) {
-            $lines = array_filter(explode("\n", $tag->description));
+            $lines = str_replace("\\", "\\\\", explode("\n", $tag->description));
             $out .= " ".$lines[0];
         }
 
