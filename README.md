@@ -58,10 +58,17 @@ output
     , "isStatic"    : false
     , "code"        : "function hello($world)"
     , "type"        : "function"
-    , "name"        : "hello"
+    , "name"        : "hello()"
   }
 ]
 ```
+
+# Supports
+
+* classes and interfaces
+* functions and methods (produces slightly different results)
+* namespaces (who phpdocs them really?)
+* class variables and constants (sweet!)
 
 # Renderers
 
