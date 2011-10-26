@@ -82,4 +82,4 @@ foreach ($blocks as $block) {
     $out .= "\n";
 }
 
-echo trim($out);
+echo trim(str_replace("\n\n\n", "\n\n", $out));
