@@ -70,12 +70,21 @@ output
 * namespaces (who phpdocs them really?)
 * class variables and constants (sweet!)
 
+# Installation
+
+Use pear to install
+
+```console
+pear channel-discover avalanche123.github.com/pear
+pear install avalanche123/doxphp-alpha
+```
+
 # Renderers
 
 * doxphp2sphinx
 
-```bash
-$ doxphp < test.php | doxphp2sphinx  > test.rst
+```console
+doxphp < test.php | doxphp2sphinx  > test.rst
 ```
 
 test.rst:

@@ -1,10 +1,15 @@
 #!/usr/bin/env php
 <?php
 
-require_once(__DIR__.'/../lib/DoxPHP/Parser/Tokens.php');
-require_once(__DIR__.'/../lib/DoxPHP/Parser/Parser.php');
-require_once(__DIR__.'/../lib/DoxPHP/Exception/Exception.php');
-require_once(__DIR__.'/../lib/DoxPHP/Exception/OutOfBoundsException.php');
+$lib = '@pear_directory@';
+if (!is_dir($lib)) {
+    $lib = __DIR__.'/../lib';
+}
+
+require_once($lib.'/DoxPHP/Parser/Tokens.php');
+require_once($lib.'/DoxPHP/Parser/Parser.php');
+require_once($lib.'/DoxPHP/Exception/Exception.php');
+require_once($lib.'/DoxPHP/Exception/OutOfBoundsException.php');
 
 set_error_handler(function($errno, $errstr, $errfile, $errline, array $errcontext) {
     new ErrorException($errstr, 0, $errno, $errfile, $errline);
