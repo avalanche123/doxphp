@@ -168,7 +168,10 @@ class Parser
 
             $tag = array('type'  => $words[0]);
 
-            if ($count > 3) {
+            if ($tag['type'] == 'author') {
+                array_shift($words);
+                $tag['description'] = implode(' ', $words);
+            } elseif ($count > 3) {
                 $tag['types']       = explode("|", $words[1]);
                 $tag['name']        = substr($words[2], 1);
                 $tag['description'] = trim($words[3]);
