@@ -7,7 +7,7 @@ define package_1
     http://pear.php.net/dtd/package-2.0
     http://pear.php.net/dtd/package-2.0.xsd">
   <name>doxphp</name>
-  <channel>avalanche123.github.com/pear</channel>
+  <channel>pear.avalanche123.com</channel>
   <summary>
     Dox for PHP, inspired by Dox for JavaScript.
   </summary>

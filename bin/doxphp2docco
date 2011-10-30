@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+
+// $blocks = json_decode(file_get_contents('php://stdin'));
+$files = array_slice($argv, 1);
+
+?>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+    </head>
+
+    <body>
+    </body>
+</html>
