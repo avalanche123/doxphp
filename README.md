@@ -23,6 +23,8 @@ test.php
 /**
  * Greets the world
  *
+ * @author Bulat Shakirzyanov <mallluhuct@gmail.com> (http://avalanche123.com)
+ *
  * @param string $world - the world to greet
  *
  * @return void
@@ -36,30 +38,36 @@ output
 
 ```js
 [
-  {
-      "tags": [
-          {
-              "type"        : "param"
-            , "types"       : ["string"]
-            , "name"        : "world"
-            , "description" : "- the world to greet"
-          }
-        , {
-              "type"  : "return"
-            , "types" : ["void"]
-          }
-      ]
-    , "description" : "Greets the world"
-    , "isPrivate"   : false
-    , "isProtected" : false
-    , "isPublic"    : true
-    , "isAbstract"  : false
-    , "isFinal"     : false
-    , "isStatic"    : false
-    , "code"        : "function hello($world)"
-    , "type"        : "function"
-    , "name"        : "hello()"
-  }
+    {
+        "tags": [
+            {
+                "type"   : "author"
+              , "email"  : "mallluhuct@gmail.com"
+              , "website": "http:\/\/avalanche123.com"
+              , "name"   : "Bulat Shakirzyanov"
+            }
+          , {
+                "type"       : "param"
+              , "types"      : [ "string" ]
+              , "name"       : "world"
+              , "description": "- the world to greet"
+            }
+          , {
+                "type" : "return"
+              , "types": [ "void" ]
+            }
+        ]
+      , "description": "Greets the world"
+      , "isPrivate"  : false
+      , "isProtected": false
+      , "isPublic"   : true
+      , "isAbstract" : false
+      , "isFinal"    : false
+      , "isStatic"   : false
+      , "code"       : "function hello($world)"
+      , "type"       : "function"
+      , "name"       : "hello()"
+    }
 ]
 ```
 

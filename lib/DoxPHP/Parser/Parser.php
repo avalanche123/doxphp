@@ -170,7 +170,19 @@ class Parser
 
             if ($tag['type'] == 'author') {
                 array_shift($words);
-                $tag['description'] = implode(' ', $words);
+                $words = explode(" ", implode(" ", array_filter($words)));
+                foreach ($words as $i => $word) {
+                    if (0 === strpos($word, "(")) {
+                        $tag['website'] = substr($word, 1, -1);
+                        unset($words[$i]);
+                        continue;
+                    }
+                    if (0 === strpos($word, "<")) {
+                        $tag['email'] = substr($word, 1, -1);
+                        unset($words[$i]);
+                    }
+                }
+                $tag['name'] = implode(' ', $words);
             } elseif ($count > 3) {
                 $tag['types']       = explode("|", $words[1]);
                 $tag['name']        = substr($words[2], 1);
