@@ -4,35 +4,45 @@ namespace DoxPHP\Parser;
 
 use DoxPHP\Exception\OutOfBoundsException;
 
+/**
+ * Parser object, used to parse Tokens
+ *
+ * @author Bulat Shakirzyanov <mallluhuct@gmail.com> (http://avalanche123.com)
+ *
+ * asd
+ */
 class Parser
 {
+    /**
+     * Parses given Tokens object and returns array of parsed blocks
+     *
+     * @param DoxPHP\Parser\Tokens $tokens - tokens to parse
+     *
+     * @return array
+     */
     public function parse(Tokens $tokens)
     {
         $this->blocks = array();
         $tokens->rewind();
 
-        try {
-            while(true) {
-                $block = (object) array(
-                    "tags"        => array(),
-                    "description" => '',
-                    "isPrivate"   => false,
-                    "isProtected" => false,
-                    "isPublic"    => false,
-                    "isAbstract"  => false,
-                    "isFinal"     => false,
-                    "isStatic"    => false,
-                    "code"        => '',
-                    "type"        => '',
-                    "name"        => '',
-                );
+        while($tokens->valid()) {
+            $block = (object) array(
+                "tags"        => array(),
+                "description" => '',
+                "isPrivate"   => false,
+                "isProtected" => false,
+                "isPublic"    => false,
+                "isAbstract"  => false,
+                "isFinal"     => false,
+                "isStatic"    => false,
+                "code"        => '',
+                "type"        => '',
+                "name"        => '',
+            );
+            $this->blocks[] = $block;
 
-                $tokens->next();
-                $this->skipWhitespace($tokens);
-
-                $this->parseCode($tokens, $block);
-            }
-        } catch (OutOfBoundsException $e) {            
+            $this->skipWhitespace($tokens);
+            $this->parseBlock($tokens, $block);
         }
 
         return $this->blocks;
@@ -40,72 +50,66 @@ class Parser
 
     private function skipWhitespace(Tokens $tokens)
     {
-        $token = $tokens->current();
-        while (in_array($token->name, array("T_WHITESPACE", "T_OPEN_TAG"))) {
-            $token = $tokens->next();
-        }
+        do {
+            $tokens->next();
+            $token = $tokens->current();
+        } while ($tokens->valid() && in_array($token->name, array("T_WHITESPACE", "T_OPEN_TAG")));
     }
 
-    private function parseCode(Tokens $tokens, stdClass $block)
+    private function parseBlock(Tokens $tokens, stdClass $block)
     {
-        $this->skipWhitespace($tokens);
         $token = $tokens->current();
 
         if ("T_DOC_COMMENT" === $token->name) {
             // parse all comments, last one before code wins
-            while (true) {
-                $this->parseComment($token, $block);
-
-                $tokens->next();
-                $this->skipWhitespace($tokens);
-                $token = $tokens->current();
-
-                if ("T_DOC_COMMENT" === $token->name) {
-                    continue;
-                }
-
-                break;
-            }
-        }
-        
-        while (!in_array($token->name, array("T_CLASS", "T_INTERFACE", "T_FUNCTION", "T_NAMESPACE", "T_VARIABLE", "T_CONST"))) {
-            if ("T_ABSTRACT" === $token->name) {
-                $block->isAbstract = true;
-                $block->code .= $token->value." ";
-            } else {
-                $block->isAbstract = false;
-            }
-            if ("T_FINAL" === $token->name) {
-                $block->isFinal = true;
-                $block->code .= $token->value." ";
-            } else {
-                $block->isFinal = false;
-            }
-            if ("T_PRIVATE" === $token->name) {
-                $block->isPrivate = true;
-                $block->code .= $token->value." ";
-            } else {
-                $block->isPrivate = false;
-            }
-            if ("T_PROTECTED" === $token->name) {
-                $block->isProtected = true;
-                $block->code .= $token->value." ";
-            } else {
-                $block->isProtected = false;
-            }
-            if ("T_PUBLIC" === $token->name) {
-                $block->code .= $token->value." ";
-            }
-            if ("T_STATIC" === $token->name) {
-                $block->isStatic = true;
-                $block->code .= $token->value." ";
-            } else {
-                $block->isStatic = false;
-            }
-
-            $tokens->next();
+            $this->parseComment($token, $block);
             $this->skipWhitespace($tokens);
             $token = $tokens->current();
+        }
+        if ("T_ABSTRACT" === $token->name) {
+            $block->isAbstract = true;
+            $block->code .= $token->value." ";
+            $this->skipWhitespace($tokens);
+            $token = $tokens->current();
+        } else {
+            $block->isAbstract = false;
+        }
+        if ("T_FINAL" === $token->name) {
+            $block->isFinal = true;
+            $block->code .= $token->value." ";
+            $this->skipWhitespace($tokens);
+            $token = $tokens->current();
+        } else {
+            $block->isFinal = false;
+        }
+        if ("T_PRIVATE" === $token->name) {
+            $block->isPrivate = true;
+            $block->code .= $token->value." ";
+            $this->skipWhitespace($tokens);
+            $token = $tokens->current();
+        } else {
+            $block->isPrivate = false;
+        }
+        if ("T_PROTECTED" === $token->name) {
+            $block->isProtected = true;
+            $block->code .= $token->value." ";
+            $this->skipWhitespace($tokens);
+            $token = $tokens->current();
+        } else {
+            $block->isProtected = false;
+        }
+        if ("T_PUBLIC" === $token->name) {
+            $block->code .= $token->value." ";
+            $this->skipWhitespace($tokens);
+            $token = $tokens->current();
+        }
+        if ("T_STATIC" === $token->name) {
+            $block->isStatic = true;
+            $block->code .= $token->value." ";
+            $this->skipWhitespace($tokens);
+            $token = $tokens->current();
+        } else {
+            $block->isStatic = false;
         }
 
         // implicit public
@@ -113,36 +117,30 @@ class Parser
 
         if ("T_CLASS" === $token->name) {
             $block->type = 'class';
-            $this->blocks[] = $block;
 
             $this->parseClassOrInterface($tokens, $block);
         } elseif ("T_INTERFACE" === $token->name) {
             $block->type = 'interface';
-            $this->blocks[] = $block;
 
             $this->parseClassOrInterface($tokens, $block);
         } elseif ("T_FUNCTION" === $token->name) {
             $block->type = 'function';
-            $this->parseFunctionOrMethod($tokens, $block);
 
-            $this->blocks[] = $block;
+            $this->parseFunctionOrMethod($tokens, $block);
         } elseif ("T_NAMESPACE" === $token->name) {
             $block->type = 'namespace';
-            $this->parseNamespace($tokens, $block);
 
-            $this->blocks[] = $block;
+            $this->parseNamespace($tokens, $block);
         } elseif ("T_VARIABLE" === $token->name) {
             $block->type = 'variable';
-            $this->parseVariable($tokens, $block);
 
-            $this->blocks[] = $block;
+            $this->parseVariable($tokens, $block);
         } elseif ("T_CONST" === $token->name) {
             $block->type = 'constant';
-            $this->parseConstant($tokens, $block);
 
-            $this->blocks[] = $block;
+            $this->parseConstant($tokens, $block);
         } else {
-            return false;
+            array_pop($this->blocks);
         }
     }
 
@@ -202,8 +200,7 @@ class Parser
 
     private function parseClassOrInterface(Tokens $tokens, stdClass $block)
     {
-        $token = $tokens->current();
-
+        $token   = $tokens->current();
         $gotName = false;
 
         while ("{" !== $token->value) {
@@ -214,16 +211,11 @@ class Parser
             if (!empty($block->name) && !$gotName && !in_array($token->name, array("T_NS_SEPARATOR", "T_STRING", "T_WHITESPACE"))) {
                 $gotName = true;
             }
-            $token = $tokens->next();
+            $tokens->next();
+            $token = $tokens->current();
         }
 
         $block->code = trim($block->code);
-
-        $tokens->next();
-
-        $this->skipWhitespace($tokens);
-
-        $token = $tokens->current();
 
         while ("}" !== $token->value) {
             $subBlock = (object) array(
@@ -237,34 +229,43 @@ class Parser
                 "isStatic"    => false,
                 "code"        => '',
                 "type"        => '',
-                "name"        => '',
+                "name"        => $block->name.'::',
             );
 
-            $this->parseCode($tokens, $subBlock);
+            $this->blocks[] = $subBlock;
+
+            $this->skipWhitespace($tokens);
+
+            if ("}" === $token->value) {
+                break;
+            }
+
+            $this->parseBlock($tokens, $subBlock);
 
             if ($subBlock->type === 'function') {
                 $subBlock->type = 'method';
             }
-            $subBlock->name = $block->name.'::'.$subBlock->name;
-
-            $this->skipWhitespace($tokens);
-            $token = $tokens->next();
+            $token = $tokens->current();
         }
     }
 
     private function parseFunctionOrMethod(Tokens $tokens, stdClass $block)
     {
-        $token = $tokens->current();
+        $gotName    = false;
+        $openCurlys = 0;
+        $token      = $tokens->current();
 
         while (!in_array($token->value, array("{", ";"))) {
             $block->code .= $token->value;
 
             // first string after keyword is the function name
-            if (empty($block->name) && "T_STRING" === $token->name) {
-                $block->name = $token->value."()";
+            if (!$gotName && "T_STRING" === $token->name) {
+                $gotName = true;
+                $block->name .= $token->value."()";
             }
 
-            $token = $tokens->next();
+            $tokens->next();
+            $token = $tokens->current();
         }
 
         $block->code = trim($block->code);
@@ -272,42 +273,52 @@ class Parser
 
         if ("{" === $token->value) {
             $openCurlys = 1;
+            $tokens->next();
+            $token = $tokens->current();
+
             while ($openCurlys !== 0) {
-                $token = $tokens->next();
                 if ("}" === $token->value) {
                     $openCurlys--;
                 } elseif ("{" === $token->value) {
                     $openCurlys++;
                 }
+                $tokens->next();
+                $token = $tokens->current();
             }
         }
     }
 
     private function parseNamespace(Tokens $tokens, stdClass $block)
     {
-        $token = $tokens->current();
+        $openCurlys = 0;
+        $token      = $tokens->current();
 
         while (!in_array($token->value, array("{", ";"))) {
             $block->code .= $token->value;
             if (in_array($token->name, array("T_NS_SEPARATOR", "T_STRING"))) {
                 $block->name .= $token->value;
             }
-            $token = $tokens->next();
+            $tokens->next();
+            $token = $tokens->current();
         }
 
         $block->code = trim($block->code);
         $block->name = trim($block->name);
 
-        // skip to the end of namespace declaration
         if ("{" === $token->value) {
             $openCurlys = 1;
-            while ($openCurlys > 0) {
-                $token = $tokens->next();
+            $tokens->next();
+            $token = $tokens->current();
+
+            // skip to the end of namespace declaration
+            while ($openCurlys !== 0) {
                 if ("}" === $token->value) {
                     $openCurlys--;
                 } elseif ("{" === $token->value) {
                     $openCurlys++;
                 }
+                $tokens->next();
+                $token = $tokens->current();
             }
         }
     }
@@ -321,13 +332,12 @@ class Parser
             if ("T_VARIABLE" === $token->name) {
                 $block->name = $token->value;
             }
-            $token = $tokens->next();
+            $tokens->next();
+            $token = $tokens->current();
         }
 
         $block->code = trim($block->code);
         $block->name = trim($block->name);
-
-        $this->skipWhitespace($tokens);
     }
 
     private function parseConstant(Tokens $tokens, stdClass $block)
@@ -336,14 +346,14 @@ class Parser
 
         while (";" !== $token->value) {
             $block->code .= $token->value;
-            $this->skipWhitespace($tokens);
-            $token = $tokens->next();
+
+            $tokens->next();
+            $token = $tokens->current();
+
             $block->name .= $token->value;
         }
 
         $block->code = trim($block->code);
         $block->name = trim($block->name);
-
-        $this->skipWhitespace($tokens);
     }
 }
