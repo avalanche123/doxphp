@@ -100,7 +100,7 @@ endef
 
 export package_1 package_2 package_3 composer
 
-.PHONY: phar test sphinxdocs clean
+.PHONY: package release clean
 
 clean:
 	git clean -df
