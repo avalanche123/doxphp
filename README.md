@@ -107,6 +107,66 @@ test.rst:
    :returns void:
 ```
 
+* doxphp2docco
+
+```console
+doxphp2docco *.php
+```
+
+this creates `docs` directory in the current directory and populates it with html files.
+
+test.html:
+
+```html
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>test.php</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="resources/doxphp.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+        <table cellpadding="0" cellspacing="0">
+      <thead>
+        <tr>
+          <th class="docs">
+            <h1>test.php</h1>
+          </th>
+          <th class="code">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr id="section-1">
+          <td class="docs">
+            <div class="pilwrap">
+              <a class="pilcrow" href="#section-1">&#182;</a>
+            </div>
+            <p>Greets the world</p>
+          </td>
+          <td class="code">
+            <div class="highlight">
+              <pre>
+                <span class="cp">&lt;?php</span>
+                <span class="k">function</span>
+                <span class="nf">hello</span>
+                <span class="p">(</span>
+                <span class="nv">$world</span>
+                <span class="p">)</span>
+              </pre>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
+```
+
 # TODO
 
 implement more renderers
