@@ -119,7 +119,7 @@ release:
 	git add composer.json; git commit -m "updated composer.json for $(VERSION) release"
 	@echo "composer.json updated"
 	make package
-	@echo "a new package Imagine-$(VERSION).tgz has been created"
+	@echo "a new package docco-$(VERSION).tgz has been created"
 	git tag v$(VERSION) -m "release v$(VERSION)"
 	@echo "tag v$(VERSION) created"
 	git push; git push --tags
