@@ -47,6 +47,12 @@ define package_1
           <tasks:replace type="pear-config" from="@bin_dir@" to="bin_dir"/>
           <tasks:replace type="pear-config" from="@pear_directory@" to="php_dir"/>
         </file>
+        <file name="doxphp2docco" role="script" baseinstalldir="/" md5sum="$(shell md5 < bin/doxphp2docco)">
+          <tasks:replace type="pear-config" from="/usr/bin/env php" to="php_bin"/>
+          <tasks:replace type="pear-config" from="@php_bin@" to="php_bin"/>
+          <tasks:replace type="pear-config" from="@bin_dir@" to="bin_dir"/>
+          <tasks:replace type="pear-config" from="@pear_directory@" to="php_dir"/>
+        </file>
       </dir>
       <dir name="lib">
 endef
@@ -69,6 +75,7 @@ define package_2
     <filelist>
       <install as="doxphp" name="bin/doxphp"/>
       <install as="doxphp2sphinx" name="bin/doxphp2sphinx"/>
+      <install as="doxphp2docco" name="bin/doxphp2docco"/>
 endef
 
 define package_3
