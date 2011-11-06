@@ -11,8 +11,17 @@ if (null === $blocks) {
 }
 
 foreach ($blocks as $block) {
+    
+    $ignore = false;
+    foreach ($block->tags as $tag) {
+        if ($tag->type == "ignore") {
+            // Ignore this block because an @ignore tag was found
+            $ignore = true;
+            break;
+        }
+    }
 
-    if ($block->isPrivate) {
+    if ($block->isPrivate || $ignore) {
         continue;
     }
 
