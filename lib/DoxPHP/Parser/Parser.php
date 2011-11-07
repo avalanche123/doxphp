@@ -148,7 +148,7 @@ class Parser
     {
         $lines = array_map(function($line) {
             return substr(trim($line), 2);
-        }, array_slice(explode(PHP_EOL, $token->value), 1, -1));
+        }, array_slice(explode("\n", $token->value), 1, -1));
 
         $tagLines = array();
 
