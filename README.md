@@ -4,6 +4,15 @@ Dox for PHP is a documentation engine for PHP inspired by the [Dox](https://gith
 
 # Installation
 
+## Pear
+
+```console
+pear channel-discover pear.avalanche123.com
+pear install avalanche123/doxphp-beta
+```
+
+## Github
+
 Clone this repository and put the `doxphp` under bin directory in your executable path.
 
 # Usage
