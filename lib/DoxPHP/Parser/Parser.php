@@ -207,6 +207,7 @@ class Parser
             $block->code .= $token->value;
             if (!$gotName && in_array($token->name, array("T_NS_SEPARATOR", "T_STRING"))) {
                 $block->name .= $token->value;
+                $block->line = $token->line;
             }
             if (!empty($block->name) && !$gotName && !in_array($token->name, array("T_NS_SEPARATOR", "T_STRING", "T_WHITESPACE"))) {
                 $gotName = true;
@@ -262,6 +263,7 @@ class Parser
             if (!$gotName && "T_STRING" === $token->name) {
                 $gotName = true;
                 $block->name .= $token->value."()";
+                $block->line = $token->line;
             }
 
             $tokens->next();

@@ -76,6 +76,7 @@ output
       , "code"       : "function hello($world)"
       , "type"       : "function"
       , "name"       : "hello()"
+      , "line"       : 12
     }
 ]
 ```
