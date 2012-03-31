@@ -17,7 +17,8 @@ class Tokens extends \ArrayIterator
         if (is_array($token)) {
             $tok = array(
                 "name"  => token_name($token[0]),
-                "value" => $token[1]
+                "value" => $token[1],
+                "line"  => $token[2],
             );
         } else {
             $tok = array(
