@@ -56,7 +56,7 @@ class Parser
         } while ($tokens->valid() && in_array($token->name, array("T_WHITESPACE", "T_OPEN_TAG")));
     }
 
-    private function parseBlock(Tokens $tokens, stdClass $block)
+    private function parseBlock(Tokens $tokens, \stdClass $block)
     {
         $token = $tokens->current();
 
@@ -144,7 +144,7 @@ class Parser
         }
     }
 
-    private function parseComment($token, stdClass $block)
+    private function parseComment($token, \stdClass $block)
     {
         $lines = array_map(function($line) {
             return substr(trim($line), 2);
@@ -198,7 +198,7 @@ class Parser
         $block->description = trim(str_replace("\n\n\n", "\n\n", implode(PHP_EOL, $lines)), "\n");
     }
 
-    private function parseClassOrInterface(Tokens $tokens, stdClass $block)
+    private function parseClassOrInterface(Tokens $tokens, \stdClass $block)
     {
         $token   = $tokens->current();
         $gotName = false;
@@ -250,7 +250,7 @@ class Parser
         }
     }
 
-    private function parseFunctionOrMethod(Tokens $tokens, stdClass $block)
+    private function parseFunctionOrMethod(Tokens $tokens, \stdClass $block)
     {
         $gotName    = false;
         $openCurlys = 0;
@@ -290,7 +290,7 @@ class Parser
         }
     }
 
-    private function parseNamespace(Tokens $tokens, stdClass $block)
+    private function parseNamespace(Tokens $tokens, \stdClass $block)
     {
         $openCurlys = 0;
         $token      = $tokens->current();
@@ -325,7 +325,7 @@ class Parser
         }
     }
 
-    private function parseVariable(Tokens $tokens, stdClass $block)
+    private function parseVariable(Tokens $tokens, \stdClass $block)
     {
         $token = $tokens->current();
 
@@ -342,7 +342,7 @@ class Parser
         $block->name = trim($block->name);
     }
 
-    private function parseConstant(Tokens $tokens, stdClass $block)
+    private function parseConstant(Tokens $tokens, \stdClass $block)
     {
         $token = $tokens->current();
 
