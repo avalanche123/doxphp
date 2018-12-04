@@ -4,7 +4,7 @@
   "keywords": ["documentation","phpdoc", "api docs"],
   "bin": ["bin/doxphp", "bin/doxphp2docco", "bin/doxphp2sphinx"],
   "homepage": "http://github.com/avalanche123/doxphp/",
-  "version": "0.2.0-dev",
+  "version": "0.2.1-dev",
   "license": "MIT",
   "authors": [
     {
