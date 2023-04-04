@@ -181,6 +181,13 @@ class Parser
                     }
                 }
                 $tag['name'] = implode(' ', $words);
+            } elseif ($tag['type'] == 'throws' || $tag['type'] == 'return') {
+                if ($count > 2) {
+                    $tag['types']       = explode("|", $words[1]);
+                    $tag['description'] = trim(implode(" ", array_slice($words, 2)));
+                } elseif ($count > 1) {
+                    $tag['types']       = explode("|", $words[1]);
+                }
             } elseif ($count > 3) {
                 $tag['types']       = explode("|", $words[1]);
                 $tag['name']        = substr($words[2], 1);
