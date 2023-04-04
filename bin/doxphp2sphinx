@@ -70,11 +70,11 @@ foreach ($blocks as $block) {
             $out .= "s";
         }
 
-        if ("param" !== $tag->type) {
+        if ("param" !== $tag->type && "throws" !== $tag->type) {
             $out .= ":";
         }
 
-        if (isset($tag->types)) {
+        if (isset($tag->types) && "return" !== $tag->type) {
             $out .= " ".str_replace("\\", "\\\\", implode("|", $tag->types));
         }
 
@@ -82,7 +82,7 @@ foreach ($blocks as $block) {
             $out .= " $".$tag->name;
         }
 
-        if ("param" === $tag->type) {
+        if ("param" === $tag->type || "throws" === $tag->type) {
             $out .= ":";
         }
 
@@ -92,6 +92,14 @@ foreach ($blocks as $block) {
         }
 
         $out .= "\n";
+
+        // In sphinxcontrib-phpdomain, the return type is not in the "returns"
+        // field but in a separated "rtype" field. So if the "return" tag has
+        // a "types" entry, we need to output this additional field.
+        if ("return" === $tag->type && isset($tag->types)) {
+            $types = str_replace("\\", "\\\\", implode("|", $tag->types));
+            $out .= "$prefix$indent:rtype: $types\n";
+        }
     }
     $out .= "\n";
 }
