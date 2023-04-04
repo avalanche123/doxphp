@@ -11,7 +11,7 @@ require_once($lib.'/DoxPHP/Parser/Parser.php');
 require_once($lib.'/DoxPHP/Exception/Exception.php');
 require_once($lib.'/DoxPHP/Exception/OutOfBoundsException.php');
 
-set_error_handler(function($errno, $errstr, $errfile, $errline, array $errcontext) {
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
     new ErrorException($errstr, 0, $errno, $errfile, $errline);
 });
 
