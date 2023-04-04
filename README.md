@@ -11,6 +11,15 @@ pear channel-discover pear.avalanche123.com
 pear install avalanche123/doxphp-beta
 ```
 
+## Composer
+
+Add it to the development requirements of your project,
+the executables will then be in `vendor/bin`.
+
+```sh
+composer require --dev doxphp/doxphp
+```
+
 ## Github
 
 Clone this repository and put the `doxphp` under bin directory in your executable path.
@@ -87,15 +96,6 @@ output
 * functions and methods (produces slightly different results)
 * namespaces (who phpdocs them really?)
 * class variables and constants (sweet!)
-
-# Installation
-
-Use pear to install
-
-```console
-pear channel-discover pear.avalanche123.com
-pear install avalanche123/doxphp-alpha
-```
 
 # Renderers
 
